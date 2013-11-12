@@ -3,6 +3,8 @@
 #koniec: 
 #DK
 
+#TO DO: podzial na linijki!!!
+
 import sys
 import re
 from PyQt4 import QtCore, QtGui
@@ -24,19 +26,28 @@ class MainRE(QtGui.QMainWindow):
 				print w
 				finded+=(w+' ')
 		return finded
-		
+	
+	def cutText(self,txt):
+		cutted=list()
+		m=txt.split('\n')
+		for i in m:
+			for j in i.split(' '):
+				cutted.append(j)
+		return cutted
+
 	def makeRegExp(self):
-		mess=str(self.ui.message.toPlainText()).split(' ')
+		mess=self.cutText(str(self.ui.message.toPlainText()).decode('utf-8'))
 		rexp=str(self.ui.regexp.toPlainText())
+		print mess
 		try:
 			self.rx=re.compile(rexp.decode('utf-8'), re.UNICODE)
-		except sre_constants.error:
-			print 'blad'
-			#wstawic okienko bledu
-		result=self.searchre(mess)
-		
-		self.ui.results.setText(result)
-		print result
+			result=self.searchre(mess)	
+			self.ui.results.setText(result)
+
+		except Exception:
+			QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+                "Error", "Wrong sign in regular expression.\n Change it and try again!",
+                QtGui.QMessageBox.NoButton, self).show()
 
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
